@@ -1,0 +1,170 @@
+-- 画面に表示するScreenGuiを取得または作成
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FE NB SPAM"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- 背景を設定
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.6, 0, 0.5, 0)  -- 横幅を広げる
+frame.Position = UDim2.new(0.2, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.5
+frame.Parent = screenGui
+
+-- タイトルのラベルを作成
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Text = "FE NB SPAM"
+titleLabel.Size = UDim2.new(1, 0, 0.2, 0)  -- 横幅をフレームに合わせる
+titleLabel.Position = UDim2.new(0, 0, 0, 0)  -- 左端に配置
+titleLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- 赤色に設定
+titleLabel.TextSize = 18  -- 文字サイズを微調整
+titleLabel.TextScaled = true
+titleLabel.BackgroundTransparency = 1
+titleLabel.Parent = frame
+
+-- TextBoxを追加（文字入力用）
+local textBox = Instance.new("TextBox")
+textBox.Text = ""  -- 初期状態は空文字
+textBox.Size = UDim2.new(0.8, 0, 0.2, 0)  -- 横幅を広く設定
+textBox.Position = UDim2.new(0.1, 0, 0.2, 0)  -- タイトルの下に配置
+textBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+textBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+textBox.TextSize = 20
+textBox.Parent = frame
+
+-- NB SPAM ボタンを追加
+local nbSpamButton = Instance.new("TextButton")
+nbSpamButton.Text = "NB SPAM"
+nbSpamButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+nbSpamButton.Position = UDim2.new(0.1, 0, 0.45, 0)  -- TextBoxの下に配置
+nbSpamButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- 初期状態は赤色（off）
+nbSpamButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+nbSpamButton.TextSize = 20
+nbSpamButton.Parent = frame
+
+-- NB SPAM ボタンの状態管理
+local isNBSPAMOn = false  -- 初期状態はオフ（赤色）
+
+-- チャットメッセージをスパムする機能
+local function spamChatMessage(message)
+    local player = game.Players.LocalPlayer
+    while isNBSPAMOn do
+        -- チャットメッセージを送信
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+        wait(0.1)  -- 0.1秒間隔で送信
+    end
+end
+
+-- NB SPAM ボタンがクリックされた時の動作
+nbSpamButton.MouseButton1Click:Connect(function()
+    local message = textBox.Text  -- TextBoxの内容を取得
+
+    if message == "" then
+        print("メッセージが入力されていません。機能しません。")
+        return  -- メッセージが空の場合は処理を中止
+    end
+
+    if isNBSPAMOn then
+        -- オフにする
+        nbSpamButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- 赤色
+        isNBSPAMOn = false
+        print("NB SPAM ボタンがオフになりました！")
+    else
+        -- オンにする
+        nbSpamButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- 緑色
+        isNBSPAMOn = true
+        print("NB SPAM ボタンがオンになりました！")
+        -- チャットをスパム開始
+        spamChatMessage(message)
+    end
+end)
+
+-- 閉じるボタン（×）を一番左に配置
+local closeButton = Instance.new("TextButton")
+closeButton.Text = "×"
+closeButton.Size = UDim2.new(0.1, 0, 0.2, 0)
+closeButton.Position = UDim2.new(0, 0, 0, 0)  -- 左端に配置
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 20
+closeButton.Parent = frame
+
+-- 最小化・最大化ボタン（－＋）
+local minusButton = Instance.new("TextButton")
+minusButton.Text = "－"
+minusButton.Size = UDim2.new(0.1, 0, 0.2, 0)
+minusButton.Position = UDim2.new(0.8, 0, 0, 0)
+minusButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+minusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minusButton.TextSize = 20
+minusButton.Parent = frame
+
+local plusButton = Instance.new("TextButton")
+plusButton.Text = "＋"
+plusButton.Size = UDim2.new(0.1, 0, 0.2, 0)
+plusButton.Position = UDim2.new(0.9, 0, 0, 0)
+plusButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+plusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+plusButton.TextSize = 20
+plusButton.Parent = frame
+
+-- メニューの最小化・最大化機能
+local function minimizeGui()
+    frame.Size = UDim2.new(0.2, 0, 0.2, 0)
+    titleLabel.Size = UDim2.new(1, 0, 0.2, 0)
+    minusButton.Text = "＋"
+end
+
+local function maximizeGui()
+    frame.Size = UDim2.new(0.6, 0, 0.5, 0)  -- 横幅を広げる
+    titleLabel.Size = UDim2.new(1, 0, 0.2, 0)
+    minusButton.Text = "－"
+end
+
+minusButton.MouseButton1Click:Connect(function()
+    if minusButton.Text == "－" then
+        minimizeGui()
+    else
+        maximizeGui()
+    end
+end)
+
+plusButton.MouseButton1Click:Connect(function()
+    if plusButton.Text == "＋" then
+        maximizeGui()
+    end
+end)
+
+-- 閉じるボタンの機能
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- ドラッグ機能を追加
+local dragging = false
+local dragInput, dragStart, startPos
+
+-- フレームをドラッグできるようにする
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- 初期状態でUIを表示する
+maximizeGui()
